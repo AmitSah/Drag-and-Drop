@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>jQuery UI Sortable - Display as grid</title>
+  <link rel="stylesheet" href="jquery-ui.css">
+  <link rel="stylesheet" href="style.css">
+  <link href="jquery.lineProgressbar.css" rel="stylesheet" type="text/css">
+  <style>
+  .closeButton {cursor: pointer;font-size: 15px;float: right;width: 19%;text-align: right;padding-right: 1%;}
+  #sortable { list-style-type: none; margin: 0; padding: 0; width: 900px; margin-left: 350px;margin-top: 200px;}
+  #sortable li { margin: 3px 3px 3px 0; padding: 1px; float: left; width: 250px; height: 100px; font-size: 4em; text-align: center; }
+  .metricname {font-size: 15px;float: left;padding-left: 2%;width: 78%;text-align: left;}
+  #parenDiv {padding-top: 1%;}
+  .metricValueDiv {font-size:25px; text-align: left; padding-top: 10%; padding-left: 2%; color: red }
+  .progressbar {width: 80%; float: left;font-size:15px;}
+  .percentValueDiv {width:20%;font-size:20px;float:right;margin-top: 2%;}
+  </style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+ <script src="jquery.lineProgressbar.js"></script>
+ <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+ 
+ 
+  <script>
+  
+
+    
+  function doFistThing(){
+		$.getJSON("https://raw.githubusercontent.com/akashkotecha/DragDrop/master/test.json", function(json) {
+		console.log(json);
+		var ul = document.createElement('ul');
+		ul.setAttribute('id','sortable');
+		ul.setAttribute('class','ui-sortable');
+		sessionStorage.setItem("jsonLength",json.length);
+		document.getElementById('renderTile').appendChild(ul);
+
+		var t, tt;
+
+		for(i=0;i<json.length;i++){
+		//alert(JSON.stringify(json[i]));
+		var li = document.createElement('li');
+		li.setAttribute('id','tile'+i);
+		li.setAttribute('class','ui-state-default ui-sortable-handle');
+		var parentDiv = document.createElement('div');
+		parentDiv.setAttribute('id','parenDiv');
+		var matricnamediv = document.createElement('div');
+		matricnamediv.setAttribute('class','metricname');
+		li.appendChild(matricnamediv);
+		matricnamediv.innerHTML=matricnamediv.innerHTML+json[i].Name;
+		var closeButtonDiv = document.createElement('div');
+		closeButtonDiv.setAttribute('class','closeButton');
+		closeButtonDiv.setAttribute('onclick','closeTile(tile'+ i +')')
+		parentDiv.appendChild(matricnamediv);
+		parentDiv.appendChild(closeButtonDiv);
+		
+		var metricValueDiv = document.createElement('div');
+		metricValueDiv.setAttribute('class','metricValueDiv');
+		metricValueDiv.innerHTML = metricValueDiv.innerHTML + json[i].Prefix + json[i].Value + json[i].Suffix;
+		
+		var idOfPanel='jq'+i.toString();
+		var progressBarDiv = document.createElement('div');
+		progressBarDiv.setAttribute('id','parenDiv');
+		var barDiv = document.createElement('div');
+		barDiv.setAttribute('id',idOfPanel);
+		
+		
+		var percentValueDiv = document.createElement('div');
+		percentValueDiv.setAttribute('class','percentValueDiv');
+		percentValueDiv.innerHTML = percentValueDiv.innerHTML + json[i].PercentToGoal + '%';
+		progressBarDiv.appendChild(barDiv);
+		progressBarDiv.appendChild(percentValueDiv);
+		
+		//var progressBarDiv = document.createElement('div');
+		//var idOfPanel=i.toString();
+		//alert(typeof i.toString());
+		//var idOfPanel='jq'+i.toString();
+		//$("#qa"+i).append("OOOOOOOOOOOOOO");
+		//progressBarDiv.setAttribute('id',idOfPanel);
+		//var per= json[i].PercentToGoal;
+		sessionStorage.setItem("percentValue"+i,json[i].PercentToGoal);
+		
+		//displayProgressBar(per,idOfPanel);
+		/*
+		var div=$(".jq1");
+		div.LineProgressbar({
+			id : idOfPanel2,
+			percentage: per,
+			radius: '3px',
+			height: '20px',
+		});*/
+		
+		li.appendChild(parentDiv);
+		li.appendChild(metricValueDiv);
+		li.appendChild(progressBarDiv);
+		
+		closeButtonDiv.innerHTML = closeButtonDiv.innerHTML + 'X';
+
+		t = document.createTextNode(i);
+		ul.appendChild(li);
+		}
+		$( "#sortable" ).sortable();
+		$( "#sortable" ).disableSelection();
+		});
+	}
+	function closeTile(tileID) {
+		$(tileID).remove();
+	}
+	
+	
+    // ....
+
+	function doSecondThing(){
+	
+    var jsonLength=sessionStorage.getItem("jsonLength");
+		//alert(jsonLength);
+		for(i=0;i<=jsonLength;i++){
+		//var str=('#jq' + i).toString();
+			//console.log(str);
+			//var div=$(str);
+		$('#jq' + i).LineProgressbar({
+			percentage: sessionStorage.getItem("percentValue"+i),
+			radius: '3px',
+			height: '20px',
+		});
+		}
+  
+	}
+	// Ensure that all scripts have been loaded.
+$(document).ready(function(){
+
+    // Call first script.
+    doFistThing();
+
+    // Set a 1 second delay that starts AFTER the first script has completed.
+    setTimeout(function(){
+
+        doSecondThing();
+
+    }, 100);
+
+
+});
+  </script>
+  
+ 
+  
+</head>
+<body>
+<div id="renderTile"></div>
+
+
+
+</body>
+</html>
