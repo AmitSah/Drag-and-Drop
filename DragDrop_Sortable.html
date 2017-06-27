@@ -20,12 +20,15 @@
   .titleParentDiv {font-size:12px;padding-top: 9%;}
   .progressBarTitleDiv {height: 18px; float:left; margin-left: 1px;}
   .percentValueTitleDiv {float: right; margin-right: 1px;}
+
   </style>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
   <script src="jquery.lineProgressbar.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <script>
-	function renderHTML(){
+  function renderHTML(){
+	
 		$.getJSON("https://raw.githubusercontent.com/akashkotecha/DragDrop/master/test.json", function(json) {
 		console.log(json);
 		var ul = document.createElement('ul');
@@ -49,7 +52,15 @@
 		matricnamediv.innerHTML=matricnamediv.innerHTML+json[i].Name;
 		var closeButtonDiv = document.createElement('div');
 		closeButtonDiv.setAttribute('class','closeButton');
+		closeButtonDiv.setAttribute('id','closeButton'+i);
 		closeButtonDiv.setAttribute('onclick','closeTile(tile'+ i +')');
+		
+		var fontAwesome=document.createElement('i');
+		fontAwesome.setAttribute('class','fa fa-close');
+		fontAwesome.setAttribute('aria-hidden','true');
+		closeButtonDiv.appendChild(fontAwesome);
+		
+		//closeButtonDiv.innerHTML = closeButtonDiv.innerHTML + 'X';
 		parentDiv.appendChild(matricnamediv);
 		parentDiv.appendChild(closeButtonDiv);
 		
@@ -84,40 +95,75 @@
 		titleDiv.appendChild(progressBarTitleDiv);
 		titleDiv.appendChild(percentValueTitleDiv);
 		
-		sessionStorage.setItem("percentValue"+i,json[i].PercentToGoal);
+		//sessionStorage.setItem("percentValue"+i,json[i].PercentToGoal);
 
 		li.appendChild(parentDiv);
 		li.appendChild(metricValueDiv);
 		li.appendChild(progressBarDiv);
 		li.appendChild(titleDiv);
+		li.setAttribute('onmouseover','displayCloseButton(this)');
+		li.setAttribute('onmouseout','hideCloseButton(this)');
 		
-		closeButtonDiv.innerHTML = closeButtonDiv.innerHTML + 'X';
+		
 
 		t = document.createTextNode(i);
 		ul.appendChild(li);
-			$('#jq' + i).LineProgressbar({
-					percentage: json[i].PercentToGoal,
-					radius: '3px',
-					height: '10px',
+		document.getElementsByClassName("closeButton")[i].style.visibility = "hidden";
+		$('#jq' + i).LineProgressbar({
+				percentage: json[i].PercentToGoal,
+				radius: '3px',
+				height: '10px',
 			});
 		}
-		
 		$( "#sortable" ).sortable();
 		$( "#sortable" ).disableSelection();
 		});
+		
+		
 	}
-	function closeTile(tileID) {
-		$(tileID).remove();
-	}
-
 	renderHTML();
+	function closeTile(tileID) {
+		
+			$(tileID).remove();
+	}
+	
+	function displayCloseButton(x){
+		if(document.getElementById("sortable").childElementCount > 1){
+			x.getElementsByClassName("closeButton")[0].style.visibility = "visible";
+		}
+	}
+	
+	function hideCloseButton(x){
+	x.getElementsByClassName("closeButton")[0].style.visibility = "hidden";
+	}
+/*
+	function renderProgressBar(){
+	
+		var jsonLength=sessionStorage.getItem("jsonLength");
+			//alert(jsonLength);
+			for(i=0;i<=jsonLength;i++){
+			//var str=('#jq' + i).toString();
+				//console.log(str);
+				//var div=$(str);
+			$('#jq' + i).LineProgressbar({
+				percentage: sessionStorage.getItem("percentValue"+i),
+				radius: '3px',
+				height: '10px',
+			});
+		}
+  
+	}
+	
+	
+		renderHTML();
+		setTimeout(function(){
+			renderProgressBar();
+		}, 700);*/
 
   </script>
 </head>
-
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <body>
-<script>
-</script>
 <div id="renderTile"></div>
 </body>
 
