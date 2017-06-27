@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Drag Drop Plugin</title>
+  <link rel="stylesheet" href="jquery-ui.css">
+  <link rel="stylesheet" href="style.css">
+  <link href="jquery.lineProgressbar.css" rel="stylesheet" type="text/css">
+  <style>
+  .closeButton {cursor: pointer;font-size: 15px;float: right;width: 19%;text-align: right;padding-right: 1%;}
+  #sortable { list-style-type: none; margin: 0; padding: 0; width: 900px; margin-left: 350px;margin-top: 200px;}
+  #sortable li { margin: 3px 3px 3px 0; padding: 1px; float: left; width: 250px; height: 100px; text-align: center; }
+  .metricname {font-size: 15px;float: left;padding-left: 2%;width: 78%;text-align: left;}
+  #parentDiv {padding-top: 1%;}
+  .progressPercentDiv {padding-top: 1%;}
+  .metricValueDiv {font-size:25px; text-align: left; padding-top: 10%; padding-left: 2%; color: rgb(210, 75, 87); }
+  .progressbar {width: 80%; float: left;font-size:15px; margin-top: 3%; margin-bottom:0px}
+  .percentValueDiv {width:20%;font-size:17px;float:right;margin-top: 1%;}
+  .titleParentDiv {font-size:12px;padding-top: 9%;}
+  .progressBarTitleDiv {height: 18px; float:left; margin-left: 1px;}
+  .percentValueTitleDiv {float: right; margin-right: 1px;}
+  </style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+  <script src="jquery.lineProgressbar.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script>
+	function renderHTML(){
+		$.getJSON("https://raw.githubusercontent.com/akashkotecha/DragDrop/master/test.json", function(json) {
+		console.log(json);
+		var ul = document.createElement('ul');
+		ul.setAttribute('id','sortable');
+		ul.setAttribute('class','ui-sortable');
+		sessionStorage.setItem("jsonLength",json.length);
+		document.getElementById('renderTile').appendChild(ul);
+
+		var t, tt;
+
+		for(i=0;i<json.length;i++){
+		//alert(JSON.stringify(json[i]));
+		var li = document.createElement('li');
+		li.setAttribute('id','tile'+i);
+		li.setAttribute('class','ui-state-default ui-sortable-handle');
+		var parentDiv = document.createElement('div');
+		parentDiv.setAttribute('id','parentDiv');
+		var matricnamediv = document.createElement('div');
+		matricnamediv.setAttribute('class','metricname');
+		li.appendChild(matricnamediv);
+		matricnamediv.innerHTML=matricnamediv.innerHTML+json[i].Name;
+		var closeButtonDiv = document.createElement('div');
+		closeButtonDiv.setAttribute('class','closeButton');
+		closeButtonDiv.setAttribute('onclick','closeTile(tile'+ i +')')
+		parentDiv.appendChild(matricnamediv);
+		parentDiv.appendChild(closeButtonDiv);
+		
+		var metricValueDiv = document.createElement('div');
+		metricValueDiv.setAttribute('class','metricValueDiv');
+		metricValueDiv.innerHTML = metricValueDiv.innerHTML + json[i].Prefix + json[i].Value + json[i].Suffix;
+		
+		var idOfPanel='jq'+i.toString();
+		var progressBarDiv = document.createElement('div');
+		progressBarDiv.setAttribute('class','progressPercentDiv');
+		var barDiv = document.createElement('div');
+		barDiv.setAttribute('id',idOfPanel);
+		
+		var percentValueDiv = document.createElement('div');
+		percentValueDiv.setAttribute('class','percentValueDiv');
+		percentValueDiv.innerHTML = percentValueDiv.innerHTML + json[i].PercentToGoal + '%';
+		
+		progressBarDiv.appendChild(barDiv);
+		progressBarDiv.appendChild(percentValueDiv);
+
+		var titleDiv = document.createElement('div');
+		titleDiv.setAttribute('class','titleParentDiv');
+		
+		var progressBarTitleDiv = document.createElement('div');
+		progressBarTitleDiv.setAttribute('class','progressBarTitleDiv');
+		progressBarTitleDiv.innerHTML = progressBarTitleDiv.innerHTML + 'Week to Date';
+		
+		var percentValueTitleDiv = document.createElement('div');
+		percentValueTitleDiv.setAttribute('class','percentValueTitleDiv');
+		percentValueTitleDiv.innerHTML = percentValueTitleDiv.innerHTML + '% to Goal';
+		
+		titleDiv.appendChild(progressBarTitleDiv);
+		titleDiv.appendChild(percentValueTitleDiv);
+		
+		sessionStorage.setItem("percentValue"+i,json[i].PercentToGoal);
+
+		li.appendChild(parentDiv);
+		li.appendChild(metricValueDiv);
+		li.appendChild(progressBarDiv);
+		li.appendChild(titleDiv);
+		
+		closeButtonDiv.innerHTML = closeButtonDiv.innerHTML + 'X';
+
+		t = document.createTextNode(i);
+		ul.appendChild(li);
+		}
+		$( "#sortable" ).sortable();
+		$( "#sortable" ).disableSelection();
+		});
+	}
+	function closeTile(tileID) {
+		$(tileID).remove();
+	}
+
+	function renderProgressBar(){
+	
+		var jsonLength=sessionStorage.getItem("jsonLength");
+			//alert(jsonLength);
+			for(i=0;i<=jsonLength;i++){
+			//var str=('#jq' + i).toString();
+				//console.log(str);
+				//var div=$(str);
+			$('#jq' + i).LineProgressbar({
+				percentage: sessionStorage.getItem("percentValue"+i),
+				radius: '3px',
+				height: '10px',
+			});
+		}
+  
+	}
+	
+	$(document).ready(function(){
+		renderHTML();
+		setTimeout(function(){
+			renderProgressBar();
+		}, 700);
+	});
+  </script>
+</head>
+
+<body>
+<div id="renderTile"></div>
+</body>
+
+</html>
