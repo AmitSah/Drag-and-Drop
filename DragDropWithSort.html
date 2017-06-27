@@ -10,7 +10,7 @@
   <style>
   .closeButton {cursor: pointer;font-size: 15px;float: right;width: 19%;text-align: right;padding-right: 1%;}
   #sortable { list-style-type: none; margin: 0; padding: 0; width: 900px; margin-left: 350px;margin-top: 200px;}
-  #sortable li { margin: 3px 3px 3px 0; padding: 1px; float: left; width: 250px; height: 100px; text-align: center; }
+  #sortable li { margin: 5px; padding: 1px; float: left; width: 250px; height: 100px; text-align: center; }
   .metricname {font-size: 15px;float: left;padding-left: 2%;width: 78%;text-align: left;}
   #parentDiv {padding-top: 1%;}
   .progressPercentDiv {padding-top: 1%;}
@@ -49,7 +49,7 @@
 		matricnamediv.innerHTML=matricnamediv.innerHTML+json[i].Name;
 		var closeButtonDiv = document.createElement('div');
 		closeButtonDiv.setAttribute('class','closeButton');
-		closeButtonDiv.setAttribute('onclick','closeTile(tile'+ i +')')
+		closeButtonDiv.setAttribute('onclick','closeTile(tile'+ i +')');
 		parentDiv.appendChild(matricnamediv);
 		parentDiv.appendChild(closeButtonDiv);
 		
@@ -95,7 +95,13 @@
 
 		t = document.createTextNode(i);
 		ul.appendChild(li);
+			$('#jq' + i).LineProgressbar({
+					percentage: json[i].PercentToGoal,
+					radius: '3px',
+					height: '10px',
+			});
 		}
+		
 		$( "#sortable" ).sortable();
 		$( "#sortable" ).disableSelection();
 		});
@@ -104,33 +110,14 @@
 		$(tileID).remove();
 	}
 
-	function renderProgressBar(){
-	
-		var jsonLength=sessionStorage.getItem("jsonLength");
-			//alert(jsonLength);
-			for(i=0;i<=jsonLength;i++){
-			//var str=('#jq' + i).toString();
-				//console.log(str);
-				//var div=$(str);
-			$('#jq' + i).LineProgressbar({
-				percentage: sessionStorage.getItem("percentValue"+i),
-				radius: '3px',
-				height: '10px',
-			});
-		}
-  
-	}
-	
-	$(document).ready(function(){
-		renderHTML();
-		setTimeout(function(){
-			renderProgressBar();
-		}, 700);
-	});
+	renderHTML();
+
   </script>
 </head>
 
 <body>
+<script>
+</script>
 <div id="renderTile"></div>
 </body>
 
